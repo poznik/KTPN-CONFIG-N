@@ -283,7 +283,7 @@ public sealed class MainViewModel : ObservableObject
     public string StatusText => _res.HasErrors
         ? "🛑 ЕСТЬ ОШИБКИ ПРОЕКТИРОВАНИЯ"
         : (ValidationMessages.Any(m => m.Severity == Severity.Warning) ? "⚠ Есть предупреждения" : "✅ Проверки пройдены");
-    public string StatusColor => _res.HasErrors ? "#C62828" : (ValidationMessages.Any(m => m.Severity == Severity.Warning) ? "#EF6C00" : "#2E7D32");
+    public string StatusColor => _res.HasErrors ? "#8A5F5F" : (ValidationMessages.Any(m => m.Severity == Severity.Warning) ? "#8A743F" : "#607D68");
 
     // ===== Превью документов =====
     public string PassportPreview { get; private set; } = "";

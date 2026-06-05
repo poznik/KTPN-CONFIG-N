@@ -6,7 +6,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="Blue" SecondaryColor="Amber" />
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="BlueGrey" SecondaryColor="Teal" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
@@ -17,7 +17,7 @@
             <Style x:Key="FieldLabel" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody1TextBlock}">
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="0,0,8,0"/>
-                <Setter Property="Foreground" Value="#37474F"/>
+                <Setter Property="Foreground" Value="#455A64"/>
             </Style>
             <Style x:Key="SectionHeader" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHeadline6TextBlock}">
                 <Setter Property="FontWeight" Value="SemiBold"/>
