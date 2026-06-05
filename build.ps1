@@ -7,6 +7,7 @@ $publishDir = Join-Path $root 'build/KtpnConfigurator_V6'
 
 Write-Host '== Tests ==' -ForegroundColor Cyan
 dotnet test $solution -c Release
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host '== Publish ==' -ForegroundColor Cyan
 dotnet publish "$root/src/KtpnConfigurator.App/KtpnConfigurator.App.csproj" `
@@ -14,6 +15,7 @@ dotnet publish "$root/src/KtpnConfigurator.App/KtpnConfigurator.App.csproj" `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true `
     -o $publishDir
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Get-ChildItem $publishDir -Filter *.pdb | Remove-Item -Force -ErrorAction SilentlyContinue
 Write-Host "Done: $publishDir/KtpnConfigurator.exe" -ForegroundColor Green

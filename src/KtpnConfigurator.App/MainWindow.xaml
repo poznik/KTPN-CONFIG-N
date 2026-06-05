@@ -72,18 +72,16 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Button ToolTip="Новый проект" Command="{Binding NewProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
-                    <Button ToolTip="Открыть проект" Command="{Binding OpenProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
-                    <Button ToolTip="Сохранить проект" Command="{Binding SaveProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button Content="Новый" ToolTip="Новый проект" Command="{Binding NewProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button Content="Открыть" ToolTip="Открыть проект" Command="{Binding OpenProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button Content="Сохранить" ToolTip="Сохранить проект" Command="{Binding SaveProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
                     <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#2E7D32" ToolTip="Экспорт в Excel">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FileExcelBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Excel" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#AD1457" ToolTip="Экспорт в PDF">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FilePdfBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="PDF" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
@@ -106,7 +104,6 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Transformer" Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="1. Трансформатор и корпус" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -208,7 +205,6 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="LightningBolt" Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="2. Ввод РУВН" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -247,7 +243,6 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="PowerPlug" Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="3. Ввод и линии РУНН" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -329,7 +324,6 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="CalculatorVariant" Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="4. Результат расчёта" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -415,7 +409,6 @@
             <TabItem>
                 <TabItem.Header>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="FileDocumentMultipleOutline" Margin="0,0,8,0" VerticalAlignment="Center"/>
                         <TextBlock Text="5. Документы" VerticalAlignment="Center"/>
                     </StackPanel>
                 </TabItem.Header>
@@ -424,13 +417,11 @@
                     <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
                         <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#2E7D32" ToolTip="Экспорт всех документов">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FileExcelBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Экспорт всех в Excel" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                         <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#AD1457" ToolTip="Экспорт всех документов">
                         <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="FilePdfBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Экспорт всех в PDF" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
