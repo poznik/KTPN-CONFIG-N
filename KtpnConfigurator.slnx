@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KtpnConfigurator.App/KtpnConfigurator.App.csproj" />
+    <Project Path="src/KtpnConfigurator.Core/KtpnConfigurator.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KtpnConfigurator.Tests/KtpnConfigurator.Tests.csproj" />
+  </Folder>
+</Solution>

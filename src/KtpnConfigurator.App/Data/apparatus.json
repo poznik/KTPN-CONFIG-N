@@ -1,0 +1,128 @@
+[
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "КЭАЗ",
+    "country": "Россия",
+    "series": "OptiMat D, OptiMat A, ВА57",
+    "currentRange": "16 - 4000 А"
+  },
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "Контактор",
+    "country": "Россия",
+    "series": "ПРОТОН, ЭЛЕКТРОН, ВА",
+    "currentRange": "16 - 6300 А"
+  },
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "IEK",
+    "country": "Россия / Китай",
+    "series": "ВА88, ВА07",
+    "currentRange": "16 - 2000 А"
+  },
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "EKF",
+    "country": "Россия / Китай",
+    "series": "AVERES, PROxima",
+    "currentRange": "16 - 4000 А"
+  },
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "ДКС (DKC)",
+    "country": "Россия",
+    "series": "YON MAX",
+    "currentRange": "16 - 1600 А"
+  },
+  {
+    "type": "Автоматический выключатель (АВ)",
+    "manufacturer": "CHINT",
+    "country": "Китай",
+    "series": "NM8N, NXm, NA8G",
+    "currentRange": "16 - 6300 А"
+  },
+  {
+    "type": "Рубильник открытый (РЕ)",
+    "manufacturer": "КЭАЗ",
+    "country": "Россия",
+    "series": "РЕ19, ВР32",
+    "currentRange": "100 - 4000 А"
+  },
+  {
+    "type": "Рубильник открытый (РЕ)",
+    "manufacturer": "Кореневский завод НВА",
+    "country": "Россия",
+    "series": "ВР32, РЕ19",
+    "currentRange": "100 - 1000 А"
+  },
+  {
+    "type": "Рубильник открытый (РЕ)",
+    "manufacturer": "IEK",
+    "country": "Россия / Китай",
+    "series": "ВР32",
+    "currentRange": "100 - 630 А"
+  },
+  {
+    "type": "Рубильник открытый (РЕ)",
+    "manufacturer": "CHINT",
+    "country": "Китай",
+    "series": "NH40",
+    "currentRange": "160 - 3150 А"
+  },
+  {
+    "type": "Рубильник с предохранителями (РПС)",
+    "manufacturer": "Кореневский завод НВА",
+    "country": "Россия",
+    "series": "РПС, РПБ",
+    "currentRange": "100 - 630 А"
+  },
+  {
+    "type": "Рубильник с предохранителями (РПС)",
+    "manufacturer": "КЭАЗ",
+    "country": "Россия",
+    "series": "РПС",
+    "currentRange": "100 - 630 А"
+  },
+  {
+    "type": "Рубильник с предохранителями (РПС)",
+    "manufacturer": "CHINT",
+    "country": "Китай",
+    "series": "HR17 (с планками)",
+    "currentRange": "160 - 630 А"
+  },
+  {
+    "type": "Предохранитель-разъединитель (ПВР / NH)",
+    "manufacturer": "КЭАЗ",
+    "country": "Россия",
+    "series": "OptiVert",
+    "currentRange": "160 - 1250 А"
+  },
+  {
+    "type": "Предохранитель-разъединитель (ПВР / NH)",
+    "manufacturer": "IEK",
+    "country": "Россия / Китай",
+    "series": "ПВР",
+    "currentRange": "160 - 630 А"
+  },
+  {
+    "type": "Предохранитель-разъединитель (ПВР / NH)",
+    "manufacturer": "EKF",
+    "country": "Россия / Китай",
+    "series": "ПВР PROxima",
+    "currentRange": "160 - 630 А"
+  },
+  {
+    "type": "Предохранитель-разъединитель (ПВР / NH)",
+    "manufacturer": "CHINT",
+    "country": "Китай",
+    "series": "NHR8, HR17",
+    "currentRange": "160 - 630 А"
+  },
+  {
+    "type": "Предохранитель-разъединитель (ПВР / NH)",
+    "manufacturer": "Апатор-Электро",
+    "country": "Россия",
+    "series": "ARS",
+    "currentRange": "160 - 1250 А"
+  }
+]

@@ -1,0 +1,470 @@
+<Window x:Class="KtpnConfigurator.App.MainWindow"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:KtpnConfigurator.App"
+        Title="Конфигуратор КТПН — v1.0" Height="840" Width="1200"
+        MinHeight="640" MinWidth="980"
+        
+        WindowStartupLocation="CenterScreen" >
+    <Window.Resources>
+        <local:StringToBrushConverter x:Key="StrBrush"/>
+        <local:SeverityToBrushConverter x:Key="SevBrush"/>
+        <local:SeverityToIconConverter x:Key="SevIcon"/>
+        <Style x:Key="ColLabel" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="Foreground" Value="#37474F"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style x:Key="GroupCard" TargetType="materialDesign:Card">
+            <Setter Property="Background" Value="White"/>
+            
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp2"/>
+            <Setter Property="UniformCornerRadius" Value="8"/>
+        </Style>
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#1565C0"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        <Style x:Key="ResultValue" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ToolBtn" TargetType="Button">
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Background" Value="#1565C0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <materialDesign:ColorZone Mode="PrimaryMid" DockPanel.Dock="Top" Padding="16,12" materialDesign:ElevationAssist.Elevation="Dp4" Panel.ZIndex="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <Button ToolTip="Новый проект" Command="{Binding NewProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button ToolTip="Открыть проект" Command="{Binding OpenProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button ToolTip="Сохранить проект" Command="{Binding SaveProjectCommand}" Style="{StaticResource MaterialDesignFlatLightBgButton}" Margin="0,0,8,0"/>
+                    <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#2E7D32" ToolTip="Экспорт в Excel">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileExcelBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Excel" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#AD1457" ToolTip="Экспорт в PDF">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FilePdfBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="PDF" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,0" VerticalAlignment="Center">
+                    <TextBlock Text="Проект:" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Opacity="0.8" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBox Width="200" Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+                    
+                    <TextBlock Text="Сетевая компания:" Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" Opacity="0.8" VerticalAlignment="Center" Margin="16,0,8,0"/>
+                    <ComboBox Width="200" ItemsSource="{Binding GridCompanies}" SelectedItem="{Binding GridCompany}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Border Grid.Column="2" CornerRadius="4" Padding="12,6" Background="{Binding StatusColor, Converter={StaticResource StrBrush}}">
+                    <TextBlock Text="{Binding StatusText}" Foreground="White" FontWeight="SemiBold"/>
+                </Border>
+            </Grid>
+        </materialDesign:ColorZone>
+
+        <TabControl Margin="16" Style="{StaticResource MaterialDesignFilledTabControl}">
+            <!-- ===== TAB 1 ===== -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Transformer" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="1. Трансформатор и корпус" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Силовой трансформатор" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Производитель:" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Manufacturers}" SelectedItem="{Binding Manufacturer}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Марка трансформатора:" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Marks}" SelectedItem="{Binding Mark}"/>
+                                    </Grid>
+                                    <Border Background="#E3F2FD" CornerRadius="4" Padding="10" Margin="0,10,0,0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                            <StackPanel Grid.Row="0" Grid.Column="0"><TextBlock Text="Мощность" Foreground="#607D8B"/><TextBlock Text="{Binding TrPowerText}" FontWeight="SemiBold"/></StackPanel>
+                                            <StackPanel Grid.Row="0" Grid.Column="1"><TextBlock Text="Длина" Foreground="#607D8B"/><TextBlock Text="{Binding TrLengthText}" FontWeight="SemiBold"/></StackPanel>
+                                            <StackPanel Grid.Row="0" Grid.Column="2"><TextBlock Text="Ширина" Foreground="#607D8B"/><TextBlock Text="{Binding TrWidthText}" FontWeight="SemiBold"/></StackPanel>
+                                            <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,8,0,0"><TextBlock Text="Высота" Foreground="#607D8B"/><TextBlock Text="{Binding TrHeightText}" FontWeight="SemiBold"/></StackPanel>
+                                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,8,0,0"><TextBlock Text="Масса" Foreground="#607D8B"/><TextBlock Text="{Binding TrMassText}" FontWeight="SemiBold"/></StackPanel>
+                                            <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,8,0,0"><TextBlock Text="Ток НН" Foreground="#607D8B"/><TextBlock Text="{Binding TrCurrentText}" FontWeight="SemiBold"/></StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </materialDesign:Card>
+
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Конструктив корпуса" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="200"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Тип стали корпуса:" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding SteelTypes}" SelectedItem="{Binding SteelType}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Толщина корпуса (мм):" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Thicknesses}" SelectedItem="{Binding Thickness}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Основание (Швеллер №):" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Channels}" SelectedItem="{Binding Channel}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Цвет корпуса (RAL):" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding RalColors}" SelectedItem="{Binding BodyColor}"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Цвет дверей (RAL):" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding RalColors}" SelectedItem="{Binding DoorColor}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Габаритные настройки отсеков" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Длина РУВН (мм):" Style="{StaticResource ColLabel}"/>
+                                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LenRuvn}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Длина РУНН (мм):" Style="{StaticResource ColLabel}"/>
+                                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LenRunn}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Допуск на отсек ТР (мм):" Style="{StaticResource ColLabel}"/>
+                                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TransformerTolerance}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Буфер по длине КТПН (мм):" Style="{StaticResource ColLabel}"/>
+                                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding LengthBuffer}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </materialDesign:Card>
+
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Рекомендуемые сечения шин (по БД)" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="РУВН (6–10 кВ):" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding BusbarHv}" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="РУНН (Ввод 0.4 кВ):" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding BusbarLv}" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Шина PE/PEN:" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding BusbarPe}" FontWeight="SemiBold"/>
+                                    </Grid>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===== TAB 2 ===== -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="LightningBolt" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="2. Ввод РУВН" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6">
+                    <materialDesign:Card Style="{StaticResource GroupCard}">
+                        <StackPanel>
+                            <TextBlock Text="Высоковольтный ввод (РУВН)" Style="{StaticResource SectionHeader}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="240"/><ColumnDefinition Width="260"/><ColumnDefinition Width="220"/><ColumnDefinition Width="120"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                    <RowDefinition/><RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Напряжение РУВН:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Voltages}" SelectedItem="{Binding Voltage}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Отсек РУВН:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding RuvnTypes}" SelectedItem="{Binding RuvnType}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Разъединитель РУВН:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding RuvnSwitches}" SelectedItem="{Binding RuvnSwitch}"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="Номинал РУВН (А):" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="3" ItemsSource="{Binding RuvnNominals}" SelectedItem="{Binding RuvnSwitchNominal}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Предохранитель ПКТ:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding FuseTypes}" SelectedItem="{Binding FuseType}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="2" Text="Номинал ПКТ:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="3" Grid.Column="3" ItemsSource="{Binding FuseNominals}" SelectedItem="{Binding FuseNominal}"/>
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Исполнение ввода:" Style="{StaticResource ColLabel}"/>
+                                <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding CableExecutions}" SelectedItem="{Binding RuvnExecution}"/>
+                                <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Установка ОПН (РУВН)" IsChecked="{Binding RuvnSurgeArrester}"/>
+                            </Grid>
+                        </StackPanel>
+                    </materialDesign:Card>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===== TAB 3 ===== -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="PowerPlug" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="3. Ввод и линии РУНН" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Вводные устройства РУНН" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="190"/><ColumnDefinition Width="110"/><ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/><RowDefinition/><RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Вводной ПВР (NH)" IsChecked="{Binding PvrOn}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="1" Margin="0,2,8,2" ItemsSource="{Binding LvNominals}" SelectedItem="{Binding PvrNominal}" IsEnabled="{Binding PvrOn}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding PvrManufacturers}" SelectedItem="{Binding PvrManufacturer}" IsEnabled="{Binding PvrOn}"/>
+                                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Вводной рубильник (РЕ)" IsChecked="{Binding ReOn}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,2,8,2" ItemsSource="{Binding LvNominals}" SelectedItem="{Binding ReNominal}" IsEnabled="{Binding ReOn}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding ReManufacturers}" SelectedItem="{Binding ReManufacturer}" IsEnabled="{Binding ReOn}"/>
+                                        <CheckBox Grid.Row="2" Grid.Column="0" Content="Вводной АВ" IsChecked="{Binding AvInOn}"/>
+                                        <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,2,8,2" ItemsSource="{Binding LvNominals}" SelectedItem="{Binding AvInNominal}" IsEnabled="{Binding AvInOn}"/>
+                                        <ComboBox Grid.Row="2" Grid.Column="2" ItemsSource="{Binding AvManufacturers}" SelectedItem="{Binding AvInManufacturer}" IsEnabled="{Binding AvInOn}"/>
+                                    </Grid>
+                                    <TextBlock Text="Колонки: устройство · номинал (А) · производитель" Foreground="#90A4AE" FontSize="11" Margin="0,4,0,0"/>
+                                </StackPanel>
+                            </materialDesign:Card>
+
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Измерения и защита РУНН" Style="{StaticResource SectionHeader}"/>
+                                    <CheckBox Content="Установка ОПН (РУНН)" IsChecked="{Binding RunnSurgeArrester}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="190"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Наличие ТТ на вводе" IsChecked="{Binding HasCt}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding TtRatios}" SelectedItem="{Binding CtRatio}" IsEnabled="{Binding HasCt}"/>
+                                        <CheckBox Grid.Row="1" Grid.Column="0" Content="Доп. комплект ТТ (КИП)" IsChecked="{Binding HasCtKip}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding TtRatios}" SelectedItem="{Binding CtKipRatio}" IsEnabled="{Binding HasCtKip}"/>
+                                    </Grid>
+                                    <CheckBox Content="Наличие счётчика на вводе" IsChecked="{Binding HasMeter}"/>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Отходящие линии РУНН" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="170"/><ColumnDefinition Width="90"/><ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                                        <CheckBox Grid.Row="0" Grid.Column="0" Content="Автоматы (АВ)" IsChecked="{Binding AvOn}"/>
+                                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0,2,8,2" Text="{Binding AvQty}" IsEnabled="{Binding AvOn}"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AvManufacturers}" SelectedItem="{Binding AvBrand}" IsEnabled="{Binding AvOn}"/>
+                                        <CheckBox Grid.Row="1" Grid.Column="0" Content="РПС" IsChecked="{Binding RpsOn}"/>
+                                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,2,8,2" Text="{Binding RpsQty}" IsEnabled="{Binding RpsOn}"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="2" ItemsSource="{Binding RpsManufacturers}" SelectedItem="{Binding RpsBrand}" IsEnabled="{Binding RpsOn}"/>
+                                    </Grid>
+                                    <TextBlock Text="Колонки: тип · кол-во (шт) · бренд" Foreground="#90A4AE" FontSize="11" Margin="0,4,0,8"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="Исполнение вывода:" Style="{StaticResource ColLabel}"/>
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding CableExecutions}" SelectedItem="{Binding OutgoingExecution}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===== TAB 4 ===== -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="CalculatorVariant" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="4. Результат расчёта" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Габариты и масса КТПН" Style="{StaticResource SectionHeader}"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/><ColumnDefinition Width="90"/><ColumnDefinition Width="120"/><ColumnDefinition Width="100"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Параметр" FontWeight="SemiBold" Foreground="#607D8B"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Расчёт" FontWeight="SemiBold" Foreground="#607D8B" HorizontalAlignment="Right"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Text="Ручной ввод" FontWeight="SemiBold" Foreground="#607D8B" HorizontalAlignment="Center"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="3" Text="ИТОГО" FontWeight="SemiBold" Foreground="#0D47A1" HorizontalAlignment="Right"/>
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Длина КТПН (мм)" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding LengthCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="1" Grid.Column="2" Margin="8,2" Text="{Binding ManualLengthText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding LengthFinalText}" Style="{StaticResource ResultValue}" Foreground="#0D47A1"/>
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Ширина КТПН (мм)" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding WidthCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="2" Grid.Column="2" Margin="8,2" Text="{Binding ManualWidthText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding WidthFinalText}" Style="{StaticResource ResultValue}" Foreground="#0D47A1"/>
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Высота КТПН (мм)" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding HeightCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="3" Grid.Column="2" Margin="8,2" Text="{Binding ManualHeightText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding HeightFinalText}" Style="{StaticResource ResultValue}" Foreground="#0D47A1"/>
+
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Масса основания (кг)" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding BaseMassCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="4" Grid.Column="2" Margin="8,2" Text="{Binding ManualBaseMassText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="3" Text="{Binding BaseMassText}" Style="{StaticResource ResultValue}"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Масса корпуса (кг)" Style="{StaticResource ColLabel}"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding BodyMassCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="5" Grid.Column="2" Margin="8,2" Text="{Binding ManualBodyMassText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding BodyMassText}" Style="{StaticResource ResultValue}"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Масса брутто (кг)" FontWeight="Bold" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding GrossMassCalcText}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                        <TextBox    Grid.Row="6" Grid.Column="2" Margin="8,2" Text="{Binding ManualGrossMassText, UpdateSourceTrigger=LostFocus}"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="3" Text="{Binding GrossMassText}" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="#AD1457"/>
+                                    </Grid>
+                                    <TextBlock Text="Подсказка: оставьте «Ручной ввод» пустым для автоматического расчёта. 0 — обнулить габарит." Foreground="#90A4AE" FontSize="11" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                            <materialDesign:Card Style="{StaticResource GroupCard}">
+                                <StackPanel>
+                                    <TextBlock Text="Проверки проектирования" Style="{StaticResource SectionHeader}"/>
+                                    <Border CornerRadius="4" Padding="10" Margin="0,0,0,8" Background="{Binding StatusColor, Converter={StaticResource StrBrush}}">
+                                        <TextBlock Text="{Binding StatusText}" Foreground="White" FontWeight="SemiBold"/>
+                                    </Border>
+                                    <ItemsControl ItemsSource="{Binding ValidationMessages}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,3">
+                                                    <Grid.ColumnDefinitions><ColumnDefinition Width="24"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Column="0" Text="{Binding Severity, Converter={StaticResource SevIcon}}"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Text}" TextWrapping="Wrap"
+                                                               Foreground="{Binding Severity, Converter={StaticResource SevBrush}}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- ===== TAB 5 ===== -->
+            <TabItem>
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FileDocumentMultipleOutline" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="5. Документы" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <Grid Margin="6">
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Command="{Binding ExportExcelCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#2E7D32" ToolTip="Экспорт всех документов">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FileExcelBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Экспорт всех в Excel" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                        <Button Command="{Binding ExportPdfCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0" Background="#AD1457" ToolTip="Экспорт всех документов">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FilePdfBox" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Экспорт всех в PDF" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    </StackPanel>
+                    <TabControl Grid.Row="1">
+                        <TabItem Header="Приказ на производство">
+                            <TextBox Text="{Binding OrderPreview, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                     VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" Padding="10"/>
+                        </TabItem>
+                        <TabItem Header="Паспорт металлоконструкции">
+                            <TextBox Text="{Binding PassportPreview, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                     VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" Padding="10"/>
+                        </TabItem>
+                        <TabItem Header="Чек-лист ОТК (Превью)">
+                            <TextBox Text="{Binding ChecklistPreview, Mode=OneWay}" IsReadOnly="True" FontFamily="Consolas" FontSize="12"
+                                     VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" Padding="10"/>
+                        </TabItem>
+                        <TabItem Header="Настройка шаблона Чек-листа">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Text="{Binding ChecklistTemplateText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" FontFamily="Consolas" FontSize="12"
+                                         VerticalScrollBarVisibility="Auto" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" Padding="10"/>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
+                                    <Button Content="Сохранить изменения шаблона" Command="{Binding SaveChecklistCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Шаблон привязывается к выбранной сетевой компании. Вычеркивание пунктов происходит автоматически (вкладка Превью)." VerticalAlignment="Center" Margin="10,0,0,0" Foreground="Gray"/>
+                                </StackPanel>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
