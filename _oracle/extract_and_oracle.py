@@ -5,7 +5,7 @@ This is the independent oracle the C# CalculationEngine is tested against."""
 import json, math, os, sys
 import openpyxl
 
-SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'KTPN_RUVN_Busbar_Updated.xlsx')
+SRC = os.path.join(os.path.dirname(__file__), 'source', 'KTPN_RUVN_Busbar_Updated.xlsx')
 DATA = os.path.join(os.path.dirname(__file__), '..', 'src', 'KtpnConfigurator.App', 'Data')
 os.makedirs(DATA, exist_ok=True)
 

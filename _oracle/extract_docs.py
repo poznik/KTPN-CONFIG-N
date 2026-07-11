@@ -4,7 +4,7 @@ replacing formula-driven cells with substitution tokens."""
 import json, os
 import openpyxl
 
-SRC = os.path.join(os.path.dirname(__file__), '..', '..', 'KTPN_RUVN_Busbar_Updated.xlsx')
+SRC = os.path.join(os.path.dirname(__file__), 'source', 'KTPN_RUVN_Busbar_Updated.xlsx')
 DATA = os.path.join(os.path.dirname(__file__), '..', 'src', 'KtpnConfigurator.App', 'Data')
 wb = openpyxl.load_workbook(SRC, data_only=False)
 ws = wb['Чек-лист ОТК']

@@ -1,0 +1,457 @@
+[
+  {
+    "symbolKey": "circuitBreaker",
+    "deviceTypes": [
+      "АВ"
+    ],
+    "letterCode": "QF",
+    "displayNameRu": "Автоматический выключатель",
+    "designationPattern": "QF{n}",
+    "labelTemplate": "{designation} {model} {nominal} А",
+    "symbolGeometry": "circuitBreaker",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Автоматический выключатель",
+    "gostRefs": [
+      "ГОСТ 2.755-87"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "disconnector",
+    "deviceTypes": [
+      "РЕ"
+    ],
+    "letterCode": "QS",
+    "displayNameRu": "Разъединитель (рубильник)",
+    "designationPattern": "QS{n}",
+    "labelTemplate": "{designation} {model} {nominal} А",
+    "symbolGeometry": "disconnector",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Разъединитель",
+    "gostRefs": [
+      "ГОСТ 2.755-87"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "switchDisconnectFuse",
+    "deviceTypes": [
+      "РПС",
+      "ПВР/NH"
+    ],
+    "letterCode": "QS",
+    "displayNameRu": "Выключатель-разъединитель-предохранитель",
+    "designationPattern": "QS{n}",
+    "labelTemplate": "{designation} {model} {nominal} А",
+    "symbolGeometry": "switchDisconnectFuse",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Выключатель-разъединитель-предохранитель",
+    "gostRefs": [
+      "ГОСТ 2.755-87",
+      "ГОСТ 2.727-68"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Буквенный код QS, часто комбинируют с FU"
+  },
+  {
+    "symbolKey": "fuse",
+    "deviceTypes": [
+      "Предохранитель"
+    ],
+    "letterCode": "FU",
+    "displayNameRu": "Предохранитель",
+    "designationPattern": "FU{n}",
+    "labelTemplate": "{designation} {nominal} А",
+    "symbolGeometry": "fuse",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Предохранитель",
+    "gostRefs": [
+      "ГОСТ 2.727-68"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "surgeArrester",
+    "deviceTypes": [
+      "ОПН"
+    ],
+    "letterCode": "FV",
+    "displayNameRu": "Ограничитель перенапряжений",
+    "designationPattern": "FV{n}",
+    "labelTemplate": "{designation}",
+    "symbolGeometry": "surgeArrester",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Ограничитель перенапряжений нелинейный (ОПН)",
+    "gostRefs": [
+      "ГОСТ 2.727-68"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "currentTransformer",
+    "deviceTypes": [
+      "ТТ"
+    ],
+    "letterCode": "TA",
+    "displayNameRu": "Трансформатор тока",
+    "designationPattern": "TA{start}-TA{end}",
+    "labelTemplate": "{designation} {model} {ratio}",
+    "symbolGeometry": "currentTransformer",
+    "terminals": [
+      "top",
+      "bottom",
+      "secondary"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Трансформатор тока",
+    "gostRefs": [
+      "ГОСТ 2.723-68"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "meter",
+    "deviceTypes": [
+      "счетчик"
+    ],
+    "letterCode": "PI",
+    "displayNameRu": "Счетчик активной энергии",
+    "designationPattern": "PI{n}",
+    "labelTemplate": "{designation}",
+    "symbolGeometry": "meter",
+    "terminals": [
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Счетчик электрической энергии",
+    "gostRefs": [
+      "ГОСТ 2.710-81"
+    ],
+    "sourceConfidence": "verified",
+    "notes": "PI используется для активной энергии"
+  },
+  {
+    "symbolKey": "powerTransformer",
+    "deviceTypes": [
+      "ТМГ",
+      "ТМ",
+      "ТСЛ"
+    ],
+    "letterCode": "T",
+    "displayNameRu": "Трансформатор силовой",
+    "designationPattern": "T{n}",
+    "labelTemplate": "{designation} {model} {power} кВА",
+    "symbolGeometry": "powerTransformer",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Силовой трансформатор",
+    "gostRefs": [
+      "ГОСТ 2.723-68"
+    ],
+    "sourceConfidence": "verified",
+    "notes": ""
+  },
+  {
+    "symbolKey": "busbar",
+    "deviceTypes": [
+      "шины",
+      "РУНН"
+    ],
+    "letterCode": "",
+    "displayNameRu": "Сборные шины",
+    "designationPattern": "",
+    "labelTemplate": "{displayName} {voltage}",
+    "symbolGeometry": "busbar",
+    "terminals": [
+      "left",
+      "right",
+      "bottom"
+    ],
+    "defaultOrientation": "horizontal",
+    "legendText": "Сборные шины",
+    "gostRefs": [
+      "ГОСТ 2.702",
+      "ГОСТ 2.755-87"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Для выпуска рабочей документации требуется уточнить буквенное обозначение и вариант УГО у проектировщика."
+  },
+  {
+    "symbolKey": "ground",
+    "deviceTypes": [
+      "заземление",
+      "PE",
+      "PEN"
+    ],
+    "letterCode": "",
+    "displayNameRu": "Заземление",
+    "designationPattern": "",
+    "labelTemplate": "{designation}",
+    "symbolGeometry": "ground",
+    "terminals": [
+      "top"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Заземление",
+    "gostRefs": [
+      "ГОСТ 2.721-74",
+      "ГОСТ 2.702"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Геометрия используется как встроенный тип рендера; нормативную ссылку и подпись нужно подтвердить проектировщиком."
+  },
+  {
+    "symbolKey": "auxiliaryCabinet",
+    "deviceTypes": [
+      "ЩСН",
+      "шкаф собственных нужд"
+    ],
+    "letterCode": "ЩСН",
+    "displayNameRu": "Шкаф собственных нужд",
+    "designationPattern": "ЩСН{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "auxiliaryCabinet",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Шкаф собственных нужд",
+    "gostRefs": [
+      "ГОСТ 2.701",
+      "ГОСТ 2.702"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Обозначение ЩСН принято как проектное имя шкафа; буквенный код должен быть подтвержден проектировщиком."
+  },
+  {
+    "symbolKey": "lighting",
+    "deviceTypes": [
+      "светильник",
+      "освещение"
+    ],
+    "letterCode": "EL",
+    "displayNameRu": "Светильник",
+    "designationPattern": "EL{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "lighting",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Светильник",
+    "gostRefs": [
+      "ГОСТ 2.732"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Буквенный код и УГО требуется проверить по применяемому стандарту проекта."
+  },
+  {
+    "symbolKey": "photoRelay",
+    "deviceTypes": [
+      "фотореле"
+    ],
+    "letterCode": "BL",
+    "displayNameRu": "Фотореле",
+    "designationPattern": "BL{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "controlRelay",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Фотореле",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Код для фотореле зависит от принятой классификации датчика/реле и должен быть подтвержден."
+  },
+  {
+    "symbolKey": "astroTimer",
+    "deviceTypes": [
+      "астротаймер"
+    ],
+    "letterCode": "KT",
+    "displayNameRu": "Астрономический таймер",
+    "designationPattern": "KT{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "controlRelay",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Астрономический таймер",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Используется как таймер/реле времени; буквенный код проверить по проектным правилам."
+  },
+  {
+    "symbolKey": "timeRelay",
+    "deviceTypes": [
+      "реле времени"
+    ],
+    "letterCode": "KT",
+    "displayNameRu": "Реле времени",
+    "designationPattern": "KT{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "controlRelay",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Реле времени",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Код требуется подтвердить по принятой системе обозначений."
+  },
+  {
+    "symbolKey": "heating",
+    "deviceTypes": [
+      "обогреватель"
+    ],
+    "letterCode": "EK",
+    "displayNameRu": "Нагревательный элемент",
+    "designationPattern": "EK{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "heating",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Нагревательный элемент",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Проверить буквенный код для конкретного исполнения обогрева."
+  },
+  {
+    "symbolKey": "thermostat",
+    "deviceTypes": [
+      "термостат"
+    ],
+    "letterCode": "SK",
+    "displayNameRu": "Термостат",
+    "designationPattern": "SK{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "controlRelay",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Термостат",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Код требуется подтвердить проектировщиком."
+  },
+  {
+    "symbolKey": "ventilation",
+    "deviceTypes": [
+      "вентилятор"
+    ],
+    "letterCode": "M",
+    "displayNameRu": "Вентилятор",
+    "designationPattern": "M{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "motor",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Вентилятор",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Обозначается как двигатель/вентилятор; уточнить для выпуска рабочей документации."
+  },
+  {
+    "symbolKey": "socket",
+    "deviceTypes": [
+      "розетка"
+    ],
+    "letterCode": "XS",
+    "displayNameRu": "Штепсельная розетка",
+    "designationPattern": "XS{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "socket",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "Розетка",
+    "gostRefs": [
+      "ГОСТ 2.710"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Код и УГО проверить по требованиям проекта."
+  },
+  {
+    "symbolKey": "backupPowerSource",
+    "deviceTypes": [
+      "РИСЭ",
+      "ИБП",
+      "АКБ"
+    ],
+    "letterCode": "РИСЭ",
+    "displayNameRu": "Резервный источник снабжения электроэнергией",
+    "designationPattern": "РИСЭ{n}",
+    "labelTemplate": "{designation} {model}",
+    "symbolGeometry": "backupPowerSource",
+    "terminals": [
+      "top",
+      "bottom"
+    ],
+    "defaultOrientation": "vertical",
+    "legendText": "РИСЭ",
+    "gostRefs": [
+      "ГОСТ 2.701",
+      "ГОСТ 2.702"
+    ],
+    "sourceConfidence": "needsVerification",
+    "notes": "Состав и обозначение РИСЭ должны быть уточнены под проект."
+  }
+]

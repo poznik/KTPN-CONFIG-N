@@ -2,12 +2,12 @@
 
 Настольное приложение для Windows, реализующее инженерный расчёт и компоновку
 КТПН на основе исходной книги `Инженерный_Расчет_КТПН_v1.0.xlsx`.
-Постановка задачи — в [../ПОСТАНОВКА_КТПН.md](../ПОСТАНОВКА_КТПН.md).
+Постановка задачи — в [docs/Постановка_КТПН.md](docs/Постановка_КТПН.md).
 
 ## Готовый exe
 
 ```
-build\KtpnConfigurator_V6\KtpnConfigurator.exe
+build\KtpnConfigurator_V6\Конфигуратор КТПН.exe
 ```
 
 Это **самодостаточная сборка** (self-contained, single-file, win-x64): .NET
@@ -59,7 +59,7 @@ dotnet publish src\KtpnConfigurator.App\KtpnConfigurator.App.csproj -c Release -
 ## Диагностика
 
 ```powershell
-KtpnConfigurator.exe --selftest
+.\build\KtpnConfigurator_V6\Конфигуратор КТПН.exe --selftest
 ```
 
 Безголовая самопроверка: загружает справочники, считает эталонную

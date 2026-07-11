@@ -12,8 +12,13 @@ public sealed class CatalogStore
     public IReadOnlyList<TransformerSpec> Transformers { get; }
     public IReadOnlyList<ApparatusSpec> Apparatus { get; }
     public CatalogOptions Options { get; }
+    public IReadOnlyList<DeviceModel> DeviceModels { get; }
+    public IReadOnlyList<DiagramSymbol> DiagramSymbols { get; }
+    public DiagramRule DiagramRules { get; }
+    public IReadOnlyList<CustomerProfileSpec> CustomerProfiles { get; }
 
     private readonly Dictionary<string, TransformerSpec> _byMark;
+    private readonly Dictionary<string, CustomerProfileSpec> _customerProfiles;
     private readonly Dictionary<string, double> _channelWeight;
     private readonly List<SteelSpec> _steels;
 
@@ -24,14 +29,23 @@ public sealed class CatalogStore
 
     public CatalogStore(IReadOnlyList<TransformerSpec> transformers,
                         IReadOnlyList<ApparatusSpec> apparatus,
-                        CatalogOptions options)
+                        CatalogOptions options,
+                        IReadOnlyList<DeviceModel> deviceModels,
+                        IReadOnlyList<DiagramSymbol> diagramSymbols,
+                        DiagramRule diagramRules,
+                        IReadOnlyList<CustomerProfileSpec> customerProfiles)
     {
         Transformers = transformers;
         Apparatus = apparatus;
         Options = options;
+        DeviceModels = deviceModels;
+        DiagramSymbols = diagramSymbols;
+        DiagramRules = diagramRules;
+        CustomerProfiles = customerProfiles;
         _byMark = transformers
             .GroupBy(t => t.Mark)
             .ToDictionary(g => g.Key, g => g.First());
+        _customerProfiles = BuildCustomerProfileIndex(customerProfiles);
         _channelWeight = options.Channels.ToDictionary(c => c.Size, c => c.WeightPerM);
         _steels = options.Steels;
     }
@@ -44,7 +58,35 @@ public sealed class CatalogStore
         var transformers = ReadJson<List<TransformerSpec>>(Path.Combine(dataDir, "transformers.json")) ?? new();
         var apparatus = ReadJson<List<ApparatusSpec>>(Path.Combine(dataDir, "apparatus.json")) ?? new();
         var options = ReadJson<CatalogOptions>(Path.Combine(dataDir, "options.json")) ?? new();
-        return new CatalogStore(transformers, apparatus, options);
+        var deviceModels = ReadJson<List<DeviceModel>>(Path.Combine(dataDir, "device_models.json")) ?? new();
+        var diagramSymbols = ReadJson<List<DiagramSymbol>>(Path.Combine(dataDir, "diagram_symbols.json")) ?? new();
+        var diagramRules = ReadJson<DiagramRule>(Path.Combine(dataDir, "diagram_rules.json")) ?? new();
+        var customerProfiles = ReadJson<List<CustomerProfileSpec>>(Path.Combine(dataDir, "customer_profiles.json")) ?? new();
+        return new CatalogStore(transformers, apparatus, options, deviceModels, diagramSymbols, diagramRules, customerProfiles);
+    }
+
+    private static Dictionary<string, CustomerProfileSpec> BuildCustomerProfileIndex(IReadOnlyList<CustomerProfileSpec> profiles)
+    {
+        var result = new Dictionary<string, CustomerProfileSpec>(StringComparer.OrdinalIgnoreCase);
+        foreach (var profile in profiles)
+            Add(profile.Name, profile, overwrite: true);
+
+        foreach (var profile in profiles)
+            foreach (var alias in profile.Aliases)
+                Add(alias, profile, overwrite: false);
+
+        return result;
+
+        void Add(string key, CustomerProfileSpec profile, bool overwrite)
+        {
+            if (!string.IsNullOrWhiteSpace(key))
+            {
+                if (overwrite)
+                    result[key.Trim()] = profile;
+                else
+                    result.TryAdd(key.Trim(), profile);
+            }
+        }
     }
 
     private static T? ReadJson<T>(string path)
@@ -82,6 +124,9 @@ public sealed class CatalogStore
 
     public TransformerSpec? GetTransformer(string mark) =>
         mark is not null && _byMark.TryGetValue(mark, out var t) ? t : null;
+
+    public CustomerProfileSpec? GetCustomerProfile(string gridCompany) =>
+        gridCompany is not null && _customerProfiles.TryGetValue(gridCompany.Trim(), out var p) ? p : null;
 
     /// <summary>Вес швеллера на метр; 0, если типоразмер не найден.</summary>
     public double ChannelWeight(string size) =>

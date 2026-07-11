@@ -21,6 +21,37 @@ public sealed class StringToBrushConverter : IValueConverter
         => Binding.DoNothing;
 }
 
+public sealed class CurrentTextConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is null)
+            return "";
+
+        if (value is int i)
+            return $"{i:0} А";
+
+        if (value is double d)
+            return $"{d:0} А";
+
+        var text = value.ToString()?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(text))
+            return "";
+
+        var last = text[^1];
+        if (last is 'А' or 'а' or 'A' or 'a')
+        {
+            var number = text[..^1].TrimEnd();
+            return string.IsNullOrWhiteSpace(number) ? text : $"{number} А";
+        }
+
+        return text;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => Binding.DoNothing;
+}
+
 /// <summary>Severity → цвет сообщения валидации.</summary>
 public sealed class SeverityToBrushConverter : IValueConverter
 {
@@ -29,9 +60,9 @@ public sealed class SeverityToBrushConverter : IValueConverter
         return value is Severity s
             ? s switch
             {
-                Severity.Error => new SolidColorBrush(Color.FromRgb(0xC6, 0x28, 0x28)),
-                Severity.Warning => new SolidColorBrush(Color.FromRgb(0xEF, 0x6C, 0x00)),
-                _ => new SolidColorBrush(Color.FromRgb(0x2E, 0x7D, 0x32)),
+                Severity.Error => new SolidColorBrush(Color.FromRgb(0x8A, 0x5F, 0x5F)),
+                Severity.Warning => new SolidColorBrush(Color.FromRgb(0x8A, 0x74, 0x3F)),
+                _ => new SolidColorBrush(Color.FromRgb(0x60, 0x7D, 0x68)),
             }
             : Brushes.Black;
     }
