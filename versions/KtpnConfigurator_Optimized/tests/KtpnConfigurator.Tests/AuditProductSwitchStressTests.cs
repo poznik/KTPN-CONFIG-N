@@ -62,16 +62,25 @@ public class AuditProductSwitchStressTests
         vm.SelectedProduct = ProductRegistry.ResolveOrDefault(ProductTypeIds.Nku);
         for (var i = 0; i < 15; i++)
             vm.AddLvPanelCommand.Execute(null);
+        var nkuPanels = vm.LvPanels.Count;
         var panel = vm.LvPanels.Last();
         panel.PanelType = "Учетная";
         panel.MainDevice = "Счетчик, ТТ";
         vm.SelectedProduct = ProductRegistry.ResolveOrDefault(ProductTypeIds.Kru);
         for (var i = 0; i < 10; i++)
             vm.AddMvCellCommand.Execute(null);
+        var kruCells = vm.MvCells.Count;
         vm.MvCells.Last().Purpose = "Секционный выключатель";
         vm.SelectedProduct = ProductRegistry.ResolveOrDefault(ProductTypeIds.SingleKtpn);
         vm.SelectedProduct = ProductRegistry.ResolveOrDefault(ProductTypeIds.Nku);
         _output.WriteLine($"panels after return: {vm.LvPanels.Count}");
+
+        // Правки пользователя не затираются типовым шаблоном при возврате.
+        Assert.Equal(nkuPanels, vm.LvPanels.Count);
+        Assert.Equal("Учетная", vm.LvPanels.Last().PanelType);
+        vm.SelectedProduct = ProductRegistry.ResolveOrDefault(ProductTypeIds.Kru);
+        Assert.Equal(kruCells, vm.MvCells.Count);
+        Assert.Equal("Секционный выключатель", vm.MvCells.Last().Purpose);
     }
 
     [Fact]

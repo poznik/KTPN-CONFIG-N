@@ -96,11 +96,10 @@ public sealed partial class MainViewModel
         _cfg.ProductTypeId = value.Id;
         _cfg.ProductDataVersion = value.CurrentDataVersion;
         _cfg.SwitchManualOverrides(previousProductId, value.Id);
+        // Линейка панелей/ячеек прежнего изделия сохраняется и восстанавливается
+        // при возврате; типовой шаблон Normalize применяет только к первому входу.
+        _cfg.SwitchProductLineups(previousProductId, value.Id);
         ProductConfigurationDefaults.Normalize(_cfg);
-        if (ShowLowVoltageConfiguration)
-            ProductConfigurationDefaults.ApplyLowVoltageTemplate(_cfg, ProductConfigurationDefaults.DefaultLowVoltageTemplate(_cfg.ProductTypeId));
-        if (ShowMediumVoltageConfiguration)
-            ProductConfigurationDefaults.ApplyMediumVoltageTemplate(_cfg, ProductConfigurationDefaults.DefaultMediumVoltageTemplate(_cfg.ProductTypeId));
         RefreshProductCollections();
         SyncOutgoingFeeders(recalculate: false);
         OnPropertyChanged(nameof(SelectedProduct));
@@ -119,7 +118,31 @@ public sealed partial class MainViewModel
         OnPropertyChanged(nameof(ProductLineupResultLabel));
         NotifyLowVoltageConfigurationProperties();
         NotifyMediumVoltageConfigurationProperties();
+        EnsureVisibleMainTab();
         Recalculate();
+    }
+
+    /// <summary>
+    /// TabControl не переключается сам, когда выбранная вкладка становится
+    /// Collapsed: контент скрытой вкладки оставался на экране. Переводим на
+    /// ближайшую по смыслу видимую вкладку.
+    /// </summary>
+    private void EnsureVisibleMainTab()
+    {
+        // Индексы вкладок MainWindow: 0 Проект, 1-4 вкладки КТПН,
+        // 5 конфигурация изделия, 6 результат, 7 документы.
+        var visible = SelectedMainTabIndex switch
+        {
+            >= 1 and <= 4 => ShowKtpnTabs,
+            5 => ShowProductConfigurationTab,
+            _ => true,
+        };
+        if (visible)
+            return;
+
+        SelectedMainTabIndex = SelectedMainTabIndex is >= 1 and <= 4 && ShowProductConfigurationTab
+            ? 5
+            : ShowKtpnTabs ? 1 : 0;
     }
 
     private void NotifyManualOverrideInputs()
@@ -150,7 +173,7 @@ public sealed partial class MainViewModel
         get => _cfg.DoubleKtpn.SecondTransformerManufacturer;
         set
         {
-            if (_cfg.DoubleKtpn.SecondTransformerManufacturer == value) return;
+            if (value is null || _cfg.DoubleKtpn.SecondTransformerManufacturer == value) return;
             _cfg.DoubleKtpn.SecondTransformerManufacturer = value;
             RefreshSecondTransformerMarks();
             if (!SecondTransformerMarks.Contains(_cfg.DoubleKtpn.SecondTransformerMark))
@@ -166,7 +189,8 @@ public sealed partial class MainViewModel
         get => _cfg.DoubleKtpn.SecondTransformerMark;
         set
         {
-            if (_cfg.DoubleKtpn.SecondTransformerMark == value) return;
+            // null — сброс SelectedItem при пересоздании SecondTransformerMarks.
+            if (value is null || _cfg.DoubleKtpn.SecondTransformerMark == value) return;
             _cfg.DoubleKtpn.SecondTransformerMark = value;
             UpdateSecondTransformerInputNominal();
             OnPropertyChanged();
@@ -461,6 +485,9 @@ public sealed partial class MainViewModel
 
     private void SetProduct<T>(T current, T value, Action<T> assign, [System.Runtime.CompilerServices.CallerMemberName] string? name = null)
     {
+        // null приходит только от WPF при подмене ItemsSource/скрытии контрола —
+        // это не пользовательский ввод, конфиг им не затираем.
+        if (value is null) return;
         if (EqualityComparer<T>.Default.Equals(current, value)) return;
         assign(value);
         OnPropertyChanged(name);
@@ -482,7 +509,7 @@ public sealed class LowVoltagePanelViewModel : ObservableObject
         get => Model.PanelType;
         set
         {
-            if (Model.PanelType == value) return;
+            if (value is null || Model.PanelType == value) return;
             Model.PanelType = value;
             OnPropertyChanged();
             _owner.ApplyLowVoltagePanelPreset(this);
@@ -494,7 +521,7 @@ public sealed class LowVoltagePanelViewModel : ObservableObject
         get => Model.MainDevice;
         set
         {
-            if (Model.MainDevice == value) return;
+            if (value is null || Model.MainDevice == value) return;
             Model.MainDevice = value;
             OnPropertyChanged();
             _owner.ApplyLowVoltageDevicePreset(this);
@@ -523,7 +550,7 @@ public sealed class LowVoltagePanelViewModel : ObservableObject
         })
             OnPropertyChanged(name);
     }
-    private void Set<T>(T current, T value, Action<T> assign, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) { if (EqualityComparer<T>.Default.Equals(current, value)) return; assign(value); OnPropertyChanged(name); _owner.ProductConfigurationChanged(); }
+    private void Set<T>(T current, T value, Action<T> assign, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) { if (value is null || EqualityComparer<T>.Default.Equals(current, value)) return; assign(value); OnPropertyChanged(name); _owner.ProductConfigurationChanged(); }
 }
 
 public sealed class MediumVoltageCellViewModel : ObservableObject
@@ -539,7 +566,7 @@ public sealed class MediumVoltageCellViewModel : ObservableObject
         get => Model.Purpose;
         set
         {
-            if (Model.Purpose == value) return;
+            if (value is null || Model.Purpose == value) return;
             Model.Purpose = value;
             OnPropertyChanged();
             _owner.ApplyMediumVoltageCellPreset(this);
@@ -550,7 +577,7 @@ public sealed class MediumVoltageCellViewModel : ObservableObject
         get => Model.MainDevice;
         set
         {
-            if (Model.MainDevice == value) return;
+            if (value is null || Model.MainDevice == value) return;
             Model.MainDevice = value;
             OnPropertyChanged();
             _owner.ApplyMediumVoltageDevicePreset(this);
@@ -586,5 +613,5 @@ public sealed class MediumVoltageCellViewModel : ObservableObject
         })
             OnPropertyChanged(name);
     }
-    private void Set<T>(T current, T value, Action<T> assign, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) { if (EqualityComparer<T>.Default.Equals(current, value)) return; assign(value); OnPropertyChanged(name); _owner.ProductConfigurationChanged(); }
+    private void Set<T>(T current, T value, Action<T> assign, [System.Runtime.CompilerServices.CallerMemberName] string? name = null) { if (value is null || EqualityComparer<T>.Default.Equals(current, value)) return; assign(value); OnPropertyChanged(name); _owner.ProductConfigurationChanged(); }
 }

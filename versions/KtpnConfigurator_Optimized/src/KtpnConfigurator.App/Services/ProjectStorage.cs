@@ -130,8 +130,12 @@ public static class ProjectStorage
 
         cfg.AuxiliaryNeeds ??= new AuxiliaryNeedsConfig();
         cfg.OutgoingFeeders ??= new List<OutgoingFeederConfig>();
+        cfg.LowVoltageAssemblyByProduct ??= new Dictionary<string, LowVoltageAssemblyConfig>();
+        cfg.MediumVoltageSwitchgearByProduct ??= new Dictionary<string, MediumVoltageSwitchgearConfig>();
         MigrateProductIdentity(cfg);
-        ProductConfigurationDefaults.Normalize(cfg);
+        // Загрузка не воскрешает намеренно пустую линейку — полный Normalize
+        // применяется только при смене изделия.
+        ProductConfigurationDefaults.NormalizeLoaded(cfg);
         cfg.Revision = Math.Max(1, cfg.Revision);
         if (string.IsNullOrWhiteSpace(cfg.BusbarHvMaterial))
             cfg.BusbarHvMaterial = "Алюминий";

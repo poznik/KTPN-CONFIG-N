@@ -464,7 +464,7 @@ public sealed partial class MainViewModel : ObservableObject
         get => _cfg.Manufacturer;
         set
         {
-            if (_cfg.Manufacturer == value) return;
+            if (value is null || _cfg.Manufacturer == value) return;
             _cfg.Manufacturer = value;
             OnPropertyChanged();
             var marks = _env.Catalog.MarksFor(value);
@@ -475,7 +475,9 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
-    public string Mark { get => _cfg.Mark; set { if (_cfg.Mark != value) { _cfg.Mark = value; if (ShowDoubleKtpnConfiguration && Tr is not null) _cfg.DoubleKtpn.Section1InputNominalA = RecommendedProductCurrent(Tr.RatedCurrentA); OnPropertyChanged(); OnPropertyChanged(nameof(Section1InputNominal)); ApplyRecommendedRuvnFuse(); Recalculate(); } } }
+    // null-guard: Marks.Clear() в сеттере Manufacturer заставляет WPF записать
+    // null в Mark; без защиты это давало пересчёт с «пустым» трансформатором.
+    public string Mark { get => _cfg.Mark; set { if (value is not null && _cfg.Mark != value) { _cfg.Mark = value; if (ShowDoubleKtpnConfiguration && Tr is not null) _cfg.DoubleKtpn.Section1InputNominalA = RecommendedProductCurrent(Tr.RatedCurrentA); OnPropertyChanged(); OnPropertyChanged(nameof(Section1InputNominal)); ApplyRecommendedRuvnFuse(); Recalculate(); } } }
 
     // ===== Enclosure =====
     public string SteelType { get => _cfg.SteelType; set { if (_cfg.SteelType != value) { _cfg.SteelType = value; OnPropertyChanged(); Recalculate(); } } }
@@ -1983,9 +1985,43 @@ public sealed partial class MainViewModel : ObservableObject
         return DocumentPackageBuilder.BuildAll(_cfg, _res, _env.Catalog, _env.Templates).ToList();
     }
 
+    private bool _recalcInProgress;
+    private bool _recalcQueued;
+
+    /// <summary>
+    /// Полный пересчёт. Повторные входы (WPF-обработчики пишут в свойства прямо
+    /// во время рассылки уведомлений — сброс SelectedItem при подмене ItemsSource
+    /// и т.п.) не рекурсируют: они ставят отметку и досчитываются после текущего
+    /// прохода. Ограничение проходов гарантирует отсутствие зависания даже при
+    /// «пинг-понге» двух свойств.
+    /// </summary>
     public void Recalculate()
     {
         if (_suspendRecalc) return;
+        if (_recalcInProgress)
+        {
+            _recalcQueued = true;
+            return;
+        }
+
+        _recalcInProgress = true;
+        try
+        {
+            var passes = 0;
+            do
+            {
+                _recalcQueued = false;
+                RecalculateCore();
+            } while (_recalcQueued && ++passes < 5);
+        }
+        finally
+        {
+            _recalcInProgress = false;
+        }
+    }
+
+    private void RecalculateCore()
+    {
         var autoChanges = ShowKtpnTabs
             ? ElectricalSelectionService.Apply(_cfg, _env.Catalog)
             : Array.Empty<ElectricalSelectionChange>();
@@ -2128,6 +2164,9 @@ public sealed partial class MainViewModel : ObservableObject
         }
         SyncOutgoingFeeders(recalculate: false);
         OnPropertyChanged(string.Empty); // refresh all inputs
+        // Открытый файл может быть другого изделия: активная вкладка КТПН
+        // при этом скрывается и её нужно заменить видимой.
+        EnsureVisibleMainTab();
         Recalculate();
     }
 

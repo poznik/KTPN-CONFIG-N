@@ -7,7 +7,7 @@ namespace KtpnConfigurator.Core.Models;
 /// </summary>
 public sealed class ProjectConfig
 {
-    public const int CurrentVersion = 8;
+    public const int CurrentVersion = 9;
 
     // --- Мета ---
     public int ProjectVersion { get; set; } = CurrentVersion;
@@ -25,6 +25,11 @@ public sealed class ProjectConfig
     public DoubleKtpnConfig DoubleKtpn { get; set; } = new();
     public LowVoltageAssemblyConfig LowVoltageAssembly { get; set; } = new();
     public MediumVoltageSwitchgearConfig MediumVoltageSwitchgear { get; set; } = new();
+    // Линейки, настроенные для других изделий того же семейства: активные
+    // LowVoltageAssembly/MediumVoltageSwitchgear относятся к текущему ProductTypeId,
+    // остальные хранятся здесь и подменяются при смене изделия (как ручные габариты).
+    public Dictionary<string, LowVoltageAssemblyConfig> LowVoltageAssemblyByProduct { get; set; } = new();
+    public Dictionary<string, MediumVoltageSwitchgearConfig> MediumVoltageSwitchgearByProduct { get; set; } = new();
 
     // --- Трансформатор ---
     public string Manufacturer { get; set; } = "";
@@ -198,11 +203,68 @@ public sealed class ProjectConfig
         ManualGrossMass = restored?.GrossMass;
     }
 
+    /// <summary>
+    /// Переносит линейки панелей/ячеек при смене изделия: текущая линейка
+    /// запоминается за прежним типом, для нового восстанавливается его собственная.
+    /// Без этого настроенная линейка НКУ молча перезаписывалась типовым шаблоном
+    /// при любом уходе на другое изделие и возврате.
+    /// </summary>
+    public void SwitchProductLineups(string? fromProductTypeId, string? toProductTypeId)
+    {
+        LowVoltageAssemblyByProduct ??= new Dictionary<string, LowVoltageAssemblyConfig>(StringComparer.OrdinalIgnoreCase);
+        MediumVoltageSwitchgearByProduct ??= new Dictionary<string, MediumVoltageSwitchgearConfig>(StringComparer.OrdinalIgnoreCase);
+
+        if (IsLowVoltageProduct(fromProductTypeId) && LowVoltageAssembly is not null)
+            LowVoltageAssemblyByProduct[fromProductTypeId!] = LowVoltageAssembly;
+        if (IsMediumVoltageProduct(fromProductTypeId) && MediumVoltageSwitchgear is not null)
+            MediumVoltageSwitchgearByProduct[fromProductTypeId!] = MediumVoltageSwitchgear;
+
+        if (IsLowVoltageProduct(toProductTypeId))
+        {
+            if (LowVoltageAssemblyByProduct.TryGetValue(toProductTypeId!, out var storedLv))
+            {
+                LowVoltageAssembly = storedLv;
+                LowVoltageAssemblyByProduct.Remove(toProductTypeId!);
+            }
+            else
+            {
+                // Первый вход в изделие: пустая заготовка, типовой состав
+                // применит ProductConfigurationDefaults.Normalize.
+                LowVoltageAssembly = new LowVoltageAssemblyConfig { LineupTemplate = "" };
+                LowVoltageAssembly.Panels.Clear();
+            }
+        }
+
+        if (IsMediumVoltageProduct(toProductTypeId))
+        {
+            if (MediumVoltageSwitchgearByProduct.TryGetValue(toProductTypeId!, out var storedMv))
+            {
+                MediumVoltageSwitchgear = storedMv;
+                MediumVoltageSwitchgearByProduct.Remove(toProductTypeId!);
+            }
+            else
+            {
+                MediumVoltageSwitchgear = new MediumVoltageSwitchgearConfig { LineupTemplate = "" };
+                MediumVoltageSwitchgear.Cells.Clear();
+            }
+        }
+    }
+
+    private static bool IsLowVoltageProduct(string? productTypeId) =>
+        productTypeId is ProductTypeIds.Nku or ProductTypeIds.Shcho or ProductTypeIds.Vru;
+
+    private static bool IsMediumVoltageProduct(string? productTypeId) =>
+        productTypeId is ProductTypeIds.Kso or ProductTypeIds.Kru;
+
     public ProjectConfig Clone()
     {
         var clone = (ProjectConfig)MemberwiseClone();
         clone.ManualOverridesByProduct = (ManualOverridesByProduct ?? new Dictionary<string, ManualDimensionOverrides>())
             .ToDictionary(pair => pair.Key, pair => pair.Value.Clone());
+        clone.LowVoltageAssemblyByProduct = (LowVoltageAssemblyByProduct ?? new Dictionary<string, LowVoltageAssemblyConfig>())
+            .ToDictionary(pair => pair.Key, pair => pair.Value.Clone(), StringComparer.OrdinalIgnoreCase);
+        clone.MediumVoltageSwitchgearByProduct = (MediumVoltageSwitchgearByProduct ?? new Dictionary<string, MediumVoltageSwitchgearConfig>())
+            .ToDictionary(pair => pair.Key, pair => pair.Value.Clone(), StringComparer.OrdinalIgnoreCase);
         clone.AuxiliaryNeeds = AuxiliaryNeeds?.Clone() ?? new AuxiliaryNeedsConfig();
         clone.DoubleKtpn = DoubleKtpn?.Clone() ?? new DoubleKtpnConfig();
         clone.LowVoltageAssembly = LowVoltageAssembly?.Clone() ?? new LowVoltageAssemblyConfig();

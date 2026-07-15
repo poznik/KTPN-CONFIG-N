@@ -138,10 +138,40 @@ public static class ProductConfigurationDefaults
 
     /// <summary>
     /// Полная подготовка проекта: дефолтный шаблон и типовая линейка для пустого
-    /// проекта. Вызывается при загрузке и смене изделия — но НЕ из расчёта и не
-    /// при обновлении коллекций, иначе намеренно удалённые панели «воскресают».
+    /// проекта. Вызывается при первом входе в изделие (смене изделия) — но НЕ из
+    /// расчёта, не при обновлении коллекций и не при загрузке файла, иначе
+    /// намеренно удалённые панели «воскресают».
     /// </summary>
     public static void Normalize(ProjectConfig project)
+    {
+        EnsureNestedConfigs(project);
+        // Пустой шаблон отличает первый вход в изделие от линейки, которую
+        // пользователь намеренно очистил (у неё шаблон уже выбран).
+        var lvFirstEntry = string.IsNullOrWhiteSpace(project.LowVoltageAssembly.LineupTemplate);
+        var mvFirstEntry = string.IsNullOrWhiteSpace(project.MediumVoltageSwitchgear.LineupTemplate);
+        NormalizeLoaded(project);
+
+        if (project.ProductTypeId is ProductTypeIds.Nku or ProductTypeIds.Shcho or ProductTypeIds.Vru
+            && lvFirstEntry && project.LowVoltageAssembly.Panels.Count == 0)
+        {
+            ApplyLowVoltageTemplate(project, project.LowVoltageAssembly.LineupTemplate);
+        }
+
+        if (project.ProductTypeId is ProductTypeIds.Kso or ProductTypeIds.Kru
+            && mvFirstEntry && project.MediumVoltageSwitchgear.Cells.Count == 0)
+        {
+            ApplyMediumVoltageTemplate(project, project.MediumVoltageSwitchgear.LineupTemplate);
+        }
+
+        Renumber(project.LowVoltageAssembly.Panels);
+        Renumber(project.MediumVoltageSwitchgear.Cells);
+    }
+
+    /// <summary>
+    /// Нормализация при загрузке файла: чинит null-вложения, шаблон и нумерацию,
+    /// но не применяет типовой состав к намеренно пустой линейке.
+    /// </summary>
+    public static void NormalizeLoaded(ProjectConfig project)
     {
         EnsureNestedConfigs(project);
 
@@ -155,18 +185,6 @@ public static class ProductConfigurationDefaults
             && string.IsNullOrWhiteSpace(project.MediumVoltageSwitchgear.LineupTemplate))
         {
             project.MediumVoltageSwitchgear.LineupTemplate = DefaultMediumVoltageTemplate(project.ProductTypeId);
-        }
-
-        if (project.ProductTypeId is ProductTypeIds.Nku or ProductTypeIds.Shcho or ProductTypeIds.Vru
-            && project.LowVoltageAssembly.Panels.Count == 0)
-        {
-            ApplyLowVoltageTemplate(project, project.LowVoltageAssembly.LineupTemplate);
-        }
-
-        if (project.ProductTypeId is ProductTypeIds.Kso or ProductTypeIds.Kru
-            && project.MediumVoltageSwitchgear.Cells.Count == 0)
-        {
-            ApplyMediumVoltageTemplate(project, project.MediumVoltageSwitchgear.LineupTemplate);
         }
 
         Renumber(project.LowVoltageAssembly.Panels);
